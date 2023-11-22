@@ -1,0 +1,36 @@
+{{- if .target_config }}
+  {{- $config_path := (print .clc_home "/configs/" .target_config) }}
+  {{- $path := (print $config_path "/config.yaml" )}}
+  {{- $config := file $path }}
+hazelcast-client:
+  cluster-name: "{{ if $config.cluster.name }}{{ $config.cluster.name }}{{ else }}dev{{ end }}"
+  network:
+    {{- with $config.cluster }}
+      {{- if .address }}
+    cluster-members:
+      - "{{ .address }}"
+      {{- end}}
+      {{- $token := index . "discovery-token" }}
+      {{- if $token }}
+    hazelcast-cloud:
+      enabled: true
+      discovery-token: "{{ $token }}"
+      {{- end }}
+    {{- end }}
+    {{- if $config.ssl }}
+      {{- $password := index $config.ssl "key-password" }}
+    ssl:
+      enabled: true
+      factory-class-name: com.hazelcast.nio.ssl.BasicSSLContextFactory
+      properties:
+        protocol: TLSv1.2
+        
+        trustStore: "{{ print $config_path "/client.truststore" }}"
+        trustStorePassword: "{{ $password }}"
+        trustStoreType: JKS
+
+        keyStore: "{{ print $config_path "/client.keystore" }}"
+        keyStorePassword: "{{ $password }}"
+        keyStoreType: JKS
+    {{- end }}    
+{{ end}}

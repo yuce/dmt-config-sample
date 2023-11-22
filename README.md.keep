@@ -1,0 +1,30 @@
+# Hazelcast Data Migration Tool Configuration Sample
+
+This project contains a sample DMT configuration.
+
+Check out our documentation for more about DMT.
+
+The source and target cluster configurations should already be created according to the parameters you have passed to `clc project create`.
+
+## Requirements
+
+* JDK 11
+* [CLC](https://docs.hazelcast.com/clc/latest/install-clc) v5.3.4 or later.
+
+## Usage
+
+Assuming you have the CLC cluster configuration for the Migration Cluster as `migration`.
+
+1. The `source/hazelcast-config.yaml` contains the client configuration to connect to the source cluster. Check that it is accurate.
+1. The `target/hazelcast-config.yaml` contains the client configuration to connect to the target cluster. Check that it is accurate.
+3. Edit `data/imap_names.txt` to contain the IMaps you want to migrate. Put a single IMap name per line. Alternatively you can use `*` to migrate all IMaps.
+4. Edit `data/replicated_map_names.txt` to contain the Replicated Maps you want to migrate. Put a single Replicated Map name per line. Alternatively you can use `*` to migrate all Replicated Maps.
+5. Run the migration estimate:
+    ```
+    $ dmt -c migration estimate .
+    ```
+6. Run the migration:
+    ```
+    $ dmt -c migration start
+    ```
+
